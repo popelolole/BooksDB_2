@@ -7,5 +7,8 @@ module se.kth.pellebe.booksdb_2_java {
 
 
     opens se.kth.pellebe.booksdb_2_java to javafx.fxml;
+    opens se.kth.pellebe.booksdb_2_java.model to javafx.base; // open model package for reflection from PropertyValuesFactory (sigh ...)
     exports se.kth.pellebe.booksdb_2_java;
+    exports se.kth.pellebe.booksdb_2_java.view;
+    opens se.kth.pellebe.booksdb_2_java.view to javafx.base;
 }

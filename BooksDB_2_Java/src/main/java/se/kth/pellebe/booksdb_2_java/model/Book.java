@@ -11,11 +11,11 @@ import java.util.regex.Pattern;
  * @author eabraham@kth.se
  */
 public class Book {
-    public enum Genre { Crime, Mystery, Romance, Drama, Memoir}
-    private int bookId;
+    public enum Genre { Crime, Mystery, Romance, Drama, Memoir, Fantasy}
+    private String bookId;
     private String isbn; // should check format
     private String title;
-    private Date published;
+    private String published;
     private String storyLine = "";
     private double rating;
     private Genre genre;
@@ -27,7 +27,7 @@ public class Book {
         return ISBN_PATTERN.matcher(isbn).matches();
     }
 
-    public Book(int bookId, String isbn, String title, Date published, double rating, Genre genre) {
+    public Book(String bookId, String isbn, String title, String published, double rating, Genre genre) {
         if(!isValidIsbn(isbn))
             throw new IllegalArgumentException("not a valid isbn");
         this.bookId = bookId;
@@ -39,27 +39,27 @@ public class Book {
         authors = new ArrayList<>();
     }
 
-    public Book(int bookId, String isbn, String title, Date published, double rating) {
+    public Book(String bookId, String isbn, String title, String published, double rating) {
         this(bookId, isbn, title, published, rating, null);
     }
 
-    public Book(String isbn, String title, Date published, double rating, Genre genre) {
-        this(-1, isbn, title, published, rating, genre);
+    public Book(String isbn, String title, String published, double rating, Genre genre) {
+        this(null, isbn, title, published, rating, genre);
     }
 
-    public Book(String isbn, String title, Date published, double rating) {
-        this(-1, isbn, title, published, rating, null);
+    public Book(String isbn, String title, String published, double rating) {
+        this(null, isbn, title, published, rating, null);
     }
 
-    public Book(String isbn, String title, Date published) {
-        this(-1, isbn, title, published, -1, null);
+    public Book(String isbn, String title, String published) {
+        this(null, isbn, title, published, -1, null);
     }
 
-    public int getBookId() { return bookId; }
-    public void setBookId(int bookId) { this.bookId = bookId; }
+    public String getBookId() { return bookId; }
+    public void setBookId(String bookId) { this.bookId = bookId; }
     public String getIsbn() { return isbn; }
     public String getTitle() { return title; }
-    public Date getPublished() { return published; }
+    public String getPublished() { return published; }
     public String getStoryLine() { return storyLine; }
 
     public double getRating() {
@@ -92,6 +92,6 @@ public class Book {
 
     @Override
     public String toString() {
-        return title + ", " + isbn + ", " + published.toString();
+        return title + ", " + isbn + ", " + published;
     }
 }

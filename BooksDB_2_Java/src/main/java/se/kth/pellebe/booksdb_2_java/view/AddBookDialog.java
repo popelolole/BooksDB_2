@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 import se.kth.pellebe.booksdb_2_java.model.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +71,7 @@ public class AddBookDialog extends Dialog<Book> {
                     if (isValidData()) {
                         result = new Book(isbnField.getText(),
                                 titleField.getText(),
-                                new Date((publishedField.getText())),
+                                publishedField.getText(),
                                 Double.parseDouble(ratingField.getText()),
                                 genreChoice.getValue());
                         try {
@@ -82,8 +83,7 @@ public class AddBookDialog extends Dialog<Book> {
                                         Book book = books.get(currentBook);
                                         Author author = book.getAuthors().get(currentBook);
                                         if (author.getName().equals(authorsNames[currentAuthor])) {
-                                            result.addAuthor(new Author(author.getAuthorId(),
-                                                    author.getName(),
+                                            result.addAuthor(new Author(author.getName(),
                                                     author.getDob()));
                                             break;
                                         }
