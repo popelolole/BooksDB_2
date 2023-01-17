@@ -1,5 +1,6 @@
 package se.kth.pellebe.booksdb_2_java.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -14,10 +15,12 @@ public class Author {
 
     private String name;
     private String dob;
+    private ArrayList<Book> books;
 
     public Author(String name, String dob) {
         this.name = name;
         this.dob = dob;
+        books = new ArrayList<>();
     }
 
     public Author(String name) {
@@ -34,6 +37,14 @@ public class Author {
 
     public String getName() {
         return name;
+    }
+
+    public ArrayList<Book> getBooks() {
+        return (ArrayList<Book>) books.clone();
+    }
+
+    public void addBook(Book book) {
+        books.add(book);
     }
 
     @Override

@@ -27,8 +27,13 @@ public class Book {
         return ISBN_PATTERN.matcher(isbn).matches();
     }
 
+    public Book(String title) {
+        this.title = title;
+        authors = new ArrayList<>();
+    }
+
     public Book(String bookId, String isbn, String title, String published, double rating, Genre genre) {
-        if(!isValidIsbn(isbn))
+        if(!isValidIsbn(isbn) && isbn != null)
             throw new IllegalArgumentException("not a valid isbn");
         this.bookId = bookId;
         this.isbn = isbn;
@@ -54,6 +59,7 @@ public class Book {
     public Book(String isbn, String title, String published) {
         this(null, isbn, title, published, -1, null);
     }
+
 
     public String getBookId() { return bookId; }
     public void setBookId(String bookId) { this.bookId = bookId; }

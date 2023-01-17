@@ -37,7 +37,7 @@ public interface BooksDbInterface {
 
     public void insertBook(Book book) throws BooksDbException;
 
-    //public void insertAuthor(Author author) throws BooksDbException;
+    public void insertAuthor(Author author) throws BooksDbException;
 
     public void updateBook(Book book) throws BooksDbException;
 

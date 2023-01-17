@@ -116,6 +116,14 @@ public class Controller {
         }
     }
 
+    public void handleInsertAuthor(Author author){
+        try {
+            booksDb.insertAuthor(author);
+        }catch(BooksDbException e){
+            booksView.showAlertAndWait("Input error.",ERROR);
+        }
+    }
+
     public void handleUpdateBook(Book book){
         Thread t = new Thread(() -> {
             try {

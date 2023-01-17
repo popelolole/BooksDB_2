@@ -91,15 +91,15 @@ public class BooksPane extends VBox {
         TableColumn<Book, String> titleCol = new TableColumn<>("Title");
         TableColumn<Book, String> isbnCol = new TableColumn<>("ISBN");
         TableColumn<Book, Date> publishedCol = new TableColumn<>("Published");
-        TableColumn<Book, String> authorCol = new TableColumn<>("Author");
+        TableColumn<Book, String> authorCol = new TableColumn<>("Authors");
         TableColumn<Book, String> genreCol = new TableColumn<>("Genre");
         TableColumn<Book, Double> ratingCol = new TableColumn<>("Rating");
         TableColumn<Book, String> storyLineCol = new TableColumn<>("Story Line");
         booksTable.getColumns().addAll(titleCol, isbnCol, publishedCol, authorCol,
                 genreCol, ratingCol, storyLineCol);
         // give title column some extra space
-        titleCol.prefWidthProperty().bind(booksTable.widthProperty().multiply(0.5));
-        authorCol.prefWidthProperty().bind(booksTable.widthProperty().multiply(0.5));
+        titleCol.prefWidthProperty().bind(booksTable.widthProperty().multiply(0.33));
+        authorCol.prefWidthProperty().bind(booksTable.widthProperty().multiply(0.33));
 
         // define how to fill data for each cell, 
         // get values from Book properties
@@ -152,14 +152,16 @@ public class BooksPane extends VBox {
         searchMenu.getItems().addAll(titleItem, isbnItem, authorItem);
 
         Menu manageMenu = new Menu("Manage");
-        MenuItem addItem = new MenuItem("Add");
-        MenuItem removeItem = new MenuItem("Remove");
-        MenuItem updateItem = new MenuItem("Update");
-        manageMenu.getItems().addAll(addItem, removeItem, updateItem);
+        MenuItem addBookItem = new MenuItem("Add Book");
+        MenuItem addAuthorItem = new MenuItem("Add Author");
+        MenuItem removeItem = new MenuItem("Remove book");
+        MenuItem updateItem = new MenuItem("Update rating");
+        manageMenu.getItems().addAll(addBookItem, addAuthorItem, removeItem, updateItem);
 
         ConnectDialog connectDialog = new ConnectDialog(controller, booksDb);
 
         AddBookDialog addDialog = new AddBookDialog(controller, booksDb);
+        AddAuthorDialog authorDialog = new AddAuthorDialog(controller, booksDb);
         UpdateDialog updateDialog = new UpdateDialog(controller, booksDb);
         RemoveDialog removeDialog = new RemoveDialog(controller, booksDb);
 
@@ -189,7 +191,7 @@ public class BooksPane extends VBox {
             }
         });
 
-        addItem.setOnAction(new EventHandler<ActionEvent>() {
+        addBookItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 Optional<Book> result = addDialog.showAndWait();
@@ -197,6 +199,19 @@ public class BooksPane extends VBox {
                     Book book = result.get();
                     controller.handleInsertBook(book);
                     System.out.println("Result: " + book.toString());
+
+                }
+            }
+        });
+
+        addAuthorItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Optional<Author> result = authorDialog.showAndWait();
+                if (result.isPresent()) {
+                    Author author = result.get();
+                    controller.handleInsertAuthor(author);
+                    System.out.println("Result: " + author.toString());
 
                 }
             }

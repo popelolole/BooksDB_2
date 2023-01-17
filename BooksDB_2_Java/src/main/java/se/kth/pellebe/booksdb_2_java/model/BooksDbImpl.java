@@ -14,7 +14,8 @@ import static com.mongodb.client.model.Updates.set;
 public class BooksDbImpl implements BooksDbInterface{
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
-    private MongoCollection<Document> collection;
+    private MongoCollection<Document> booksCollection;
+    private MongoCollection<Document> authorsCollection;
     private final List<Book> books;
 
     public BooksDbImpl(){
@@ -30,7 +31,8 @@ public class BooksDbImpl implements BooksDbInterface{
 
         mongoClient = MongoClients.create(settings);
         mongoDatabase = mongoClient.getDatabase(database);
-        collection = mongoDatabase.getCollection("books");
+        booksCollection = mongoDatabase.getCollection("books");
+        authorsCollection = mongoDatabase.getCollection("authors");
 
         return mongoClient != null;
     }
@@ -42,28 +44,28 @@ public class BooksDbImpl implements BooksDbInterface{
 
     @Override
     public List<Book> searchBooksByTitle(String title) throws BooksDbException {
-        FindIterable find = collection.find(eq("title", title));
+        FindIterable find = booksCollection.find(eq("title", title));
 
         return transformBooks(find);
     }
 
     @Override
     public List<Book> searchBooksByISBN(String isbn) throws BooksDbException {
-        FindIterable find = collection.find(eq("isbn", isbn));
+        FindIterable find = booksCollection.find(eq("isbn", isbn));
 
         return transformBooks(find);
     }
 
     @Override
     public List<Book> searchBooksByAuthor(String searchAuthor) throws BooksDbException {
-        FindIterable find = collection.find(eq("authors.name", searchAuthor));
+        FindIterable find = booksCollection.find(eq("authors.name", searchAuthor));
 
         return transformBooks(find);
     }
 
     @Override
     public List<Book> searchBooksByGenre(String searchGenre) throws BooksDbException {
-        FindIterable find = collection.find(eq("genre", searchGenre));
+        FindIterable find = booksCollection.find(eq("genre", searchGenre));
 
         return transformBooks(find);
     }
@@ -71,7 +73,7 @@ public class BooksDbImpl implements BooksDbInterface{
     @Override
     public List<Book> searchBooksByRating(String searchRating) throws BooksDbException {
         Double rating = Double.parseDouble(searchRating);
-        FindIterable find = collection.find(eq("rating", rating));
+        FindIterable find = booksCollection.find(eq("rating", rating));
 
         return transformBooks(find);
     }
@@ -88,23 +90,37 @@ public class BooksDbImpl implements BooksDbInterface{
 
         List<Document> authors = new ArrayList<>();
         for(Author author : book.getAuthors()) {
-            authors.add(new Document("name", author.getName())
-                    .append("dob", author.getDob()));
+            authors.add(new Document("name", author.getName()));
+                    //.append("dob", author.getDob()));
         }
         document.append("authors", authors);
 
-        collection.insertOne(document);
+        booksCollection.insertOne(document);
+    }
+
+    @Override
+    public void insertAuthor(Author author) throws BooksDbException{
+        Document document = new Document("name", author.getName())
+                .append("dob", author.getDob());
+
+        List<Document> books = new ArrayList<>();
+        for(Book book : author.getBooks()) {
+            books.add(new Document("title", book.getTitle()));
+        }
+        document.append("books", books);
+
+        authorsCollection.insertOne(document);
     }
 
     @Override
     public void updateBook(Book book) throws BooksDbException {
-        collection.updateOne(eq("isbn", book.getIsbn()),
+        booksCollection.updateOne(eq("isbn", book.getIsbn()),
                 combine(set("rating", book.getRating())));
     }
 
     @Override
     public void removeBook(Book book) throws BooksDbException {
-        collection.deleteOne(eq("isbn", book.getIsbn()));
+        booksCollection.deleteOne(eq("isbn", book.getIsbn()));
     }
 
     private List<Book> transformBooks(FindIterable find){
@@ -121,8 +137,7 @@ public class BooksDbImpl implements BooksDbInterface{
             for(int i = 0;i < authors.size();i++){
                 Document authorDoc = authors.get(i);
                 Object[] authorValues = authorDoc.values().toArray();
-                Author author = new Author((String) authorValues[0],
-                        (String) authorValues[1]);
+                Author author = new Author((String) authorValues[0]);
                 book.addAuthor(author);
             }
             books.add(book);
