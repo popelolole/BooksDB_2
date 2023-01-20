@@ -1,5 +1,6 @@
 package se.kth.pellebe.booksdb_2_java.model;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.*;
@@ -44,21 +45,31 @@ public class BooksDbImpl implements BooksDbInterface{
 
     @Override
     public List<Book> searchBooksByTitle(String title) throws BooksDbException {
-        FindIterable find = booksCollection.find(eq("title", title));
+        BasicDBObject regexQuery = new BasicDBObject();
+        //change regex for query to match objects containing string, also makes case-insensitive
+        regexQuery.put("title", new BasicDBObject("$regex",
+                java.util.regex.Pattern.compile(title)).append("$options", "i"));
+        FindIterable find = booksCollection.find(regexQuery);
 
         return transformBooks(find);
     }
 
     @Override
     public List<Book> searchBooksByISBN(String isbn) throws BooksDbException {
-        FindIterable find = booksCollection.find(eq("isbn", isbn));
+        BasicDBObject regexQuery = new BasicDBObject();
+        regexQuery.put("isbn", new BasicDBObject("$regex",
+                java.util.regex.Pattern.compile(isbn)).append("$options", "i"));
+        FindIterable find = booksCollection.find(regexQuery);
 
         return transformBooks(find);
     }
 
     @Override
     public List<Book> searchBooksByAuthor(String searchAuthor) throws BooksDbException {
-        FindIterable find = booksCollection.find(eq("authors.name", searchAuthor));
+        BasicDBObject regexQuery = new BasicDBObject();
+        regexQuery.put("authors.name", new BasicDBObject("$regex",
+                java.util.regex.Pattern.compile(searchAuthor)).append("$options", "i"));
+        FindIterable find = booksCollection.find(regexQuery);
 
         return transformBooks(find);
     }
